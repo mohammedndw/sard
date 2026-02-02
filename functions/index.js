@@ -50,6 +50,6 @@ app.get('/api/contacts', (req, res) => {
   res.json(contactMessages);
 });
 
-app.listen(PORT, 'localhost', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Backend API running at http://localhost:${PORT}`);
 });

@@ -1,31 +1,38 @@
 # Sard Cultural Center Website
 
 ## Overview
-This is a static HTML/CSS/JavaScript website for Sard Cultural Center (مركز سرد الثقافي), the first private cultural center in Saudi Arabia. The website is in Arabic with RTL (right-to-left) layout.
+A modern React website with Firebase Cloud Functions backend for Sard Cultural Center (مركز سرد الثقافي), the first private cultural center in Saudi Arabia. The website is in Arabic with RTL (right-to-left) layout.
 
 ## Project Structure
-- `sard.html` - Main homepage
-- `aboutus.html` - About us page
-- `service.html` - Services page
-- `Courses.html` - Courses overview
-- `musical-courses.html`, `guitar-course.html` - Music course pages
-- `booking.html` - Workshop and event booking
-- `calendar.html` - Event calendar
-- `cart.html` - Shopping cart
-- `contactus.html` - Contact page
-- `*.css` - Corresponding stylesheets for each page
-- `calendar.js` - Calendar functionality
-- `dropdown.js` - Dropdown menu functionality
-- `imgsardculturalc/` - Image assets folder
+```
+/frontend           - React + Vite frontend application
+  /src
+    /components     - Reusable components (Header, Footer, Layout)
+    /pages          - Page components (Home, About, Services, Courses, Contact, etc.)
+    /styles         - CSS stylesheets
+  /public/assets    - Image assets
 
-## Running the Project
-The website is served using a Python HTTP server on port 5000:
-```bash
-python server.py
+/functions          - Firebase Cloud Functions (Node.js + Express API)
+  index.js          - API endpoints (/api/health, /api/contact)
 ```
 
-## Deployment
-This is a static website deployment. The server.py file handles:
-- Serving static files
-- Redirecting root URL to sard.html
-- Disabling cache for development
+## Running the Project
+
+### Frontend (port 5000):
+```bash
+cd frontend && npm run dev
+```
+
+### Backend API (port 3001):
+```bash
+cd functions && npm run serve
+```
+
+## API Endpoints
+- GET /api/health - Health check
+- POST /api/contact - Submit contact form (name, email, message)
+
+## Tech Stack
+- Frontend: React 18, Vite, React Router v6
+- Backend: Node.js, Express
+- Styling: Custom CSS with Arabic RTL support
