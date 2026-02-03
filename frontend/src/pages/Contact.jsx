@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { db } from '../firebase'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import '../styles/contact.css'
 
 function Contact() {
@@ -20,29 +22,20 @@ function Contact() {
     setStatus({ loading: true, success: false, error: null })
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-      const response = await fetch(`${apiUrl}/api/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          message: formData.message
-        }),
+      await addDoc(collection(db, 'contacts'), {
+        name: formData.name,
+        email: formData.email,
+        address: formData.address,
+        phone: formData.phone,
+        message: formData.message,
+        createdAt: serverTimestamp()
       })
 
-      const data = await response.json()
-
-      if (response.ok) {
-        setStatus({ loading: false, success: true, error: null })
-        setFormData({ name: '', email: '', address: '', phone: '', message: '' })
-      } else {
-        setStatus({ loading: false, success: false, error: data.error || 'حدث خطأ' })
-      }
+      setStatus({ loading: false, success: true, error: null })
+      setFormData({ name: '', email: '', address: '', phone: '', message: '' })
     } catch (error) {
-      setStatus({ loading: false, success: false, error: 'فشل في الاتصال بالخادم' })
+      console.error('Error saving to Firestore:', error)
+      setStatus({ loading: false, success: false, error: 'حدث خطأ في إرسال الرسالة' })
     }
   }
 
