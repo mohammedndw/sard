@@ -18,11 +18,23 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == userId;
     }
     
+    // Helper function to check if incoming data has userId matching auth
+    function incomingUserIdMatches() {
+      return request.resource.data.userId == request.auth.uid;
+    }
+    
+    // Helper function to check role is not being changed
+    function roleNotChanged() {
+      return !('role' in request.resource.data) || 
+             request.resource.data.role == resource.data.role;
+    }
+    
     // Users collection
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      // Users can update their own profile but not their role; admins can update anything
+      allow update: if isAdmin() || (isOwner(userId) && roleNotChanged());
       allow delete: if isAdmin();
     }
     
@@ -42,7 +54,8 @@ service cloud.firestore {
     match /registrations/{registrationId} {
       allow read: if isAdmin() || 
                     (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated();
+      // Users can only create registrations for themselves
+      allow create: if isAuthenticated() && incomingUserIdMatches();
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
@@ -50,8 +63,9 @@ service cloud.firestore {
     // Bookings collection (place rental requests)
     match /bookings/{bookingId} {
       allow read: if isAdmin() || 
-                    (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated();
+                    (isAuthenticated() && resource.data.email == request.auth.token.email);
+      // Anyone can create booking requests (email-based, not userId based)
+      allow create: if true;
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
@@ -60,12 +74,13 @@ service cloud.firestore {
     match /payments/{paymentId} {
       allow read: if isAdmin() || 
                     (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated();
+      // Payments should only be created by authenticated users for themselves
+      allow create: if isAuthenticated() && incomingUserIdMatches();
       allow update: if isAdmin();
       allow delete: if false;
     }
     
-    // Contacts collection (existing contact form)
+    // Contacts collection (existing contact form - public create)
     match /contacts/{contactId} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
