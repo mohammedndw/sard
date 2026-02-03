@@ -1,8 +1,12 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 
 function Header() {
   const [openDropdown, setOpenDropdown] = useState(null)
+  const auth = useAuth() || {}
+  const { currentUser = null, isAdmin = false, logout = () => {} } = auth
+  const navigate = useNavigate()
 
   const handleDropdownEnter = (name) => {
     setOpenDropdown(name)
@@ -10,6 +14,15 @@ function Header() {
 
   const handleDropdownLeave = () => {
     setOpenDropdown(null)
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      navigate('/')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
   }
 
   return (
@@ -58,8 +71,9 @@ function Header() {
             onMouseEnter={() => handleDropdownEnter('events')}
             onMouseLeave={handleDropdownLeave}
           >
-            <Link to="/booking">الورش والفعاليات</Link>
+            <Link to="/events">الورش والفعاليات</Link>
             <ul className={`dropdown-menu ${openDropdown === 'events' ? 'show' : ''}`}>
+              <li><Link to="/events">جميع الفعاليات</Link></li>
               <li><Link to="/calendar">التقويم</Link></li>
             </ul>
           </li>
@@ -74,6 +88,18 @@ function Header() {
         <Link to="/cart" className="cart-icon" aria-label="سلة الشراء">
           <i className="fas fa-shopping-cart"></i>
         </Link>
+        
+        {currentUser ? (
+          <div className="user-menu">
+            {isAdmin && (
+              <Link to="/admin" className="admin-link">لوحة التحكم</Link>
+            )}
+            <button onClick={handleLogout} className="logout-btn">تسجيل الخروج</button>
+          </div>
+        ) : (
+          <Link to="/login" className="login-btn">تسجيل الدخول</Link>
+        )}
+        
         <button id="langBtn">English</button>
       </div>
     </header>

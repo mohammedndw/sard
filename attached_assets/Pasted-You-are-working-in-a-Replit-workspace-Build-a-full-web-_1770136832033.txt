@@ -1,0 +1,178 @@
+You are working in a Replit workspace. Build a full web system for a Social Culture Center that runs events/parties and also rents our place. We already have a basic frontend website, and we want to redevelop it to fit business needs.
+
+TECH STACK (MUST)
+- Frontend: React (Vite) + React Router
+- Backend: Firebase (Auth + Firestore + Storage + Cloud Functions)
+- Hosting/dev: Replit (everything runs inside Replit)
+
+ACTORS
+1) Admin: manage everything (dashboard, events, booking, attendees)
+2) User: landing page, services, browse events, register, buy tickets
+3) Payment Gateway: handles payment flow (create payment session + webhook confirmation)
+
+IMPORTANT
+- Work in phases. Finish each phase fully before moving to the next.
+- Keep code clean, modular, and simple.
+- Use environment variables for keys/secrets. Do not hardcode secrets.
+- Add a README with step-by-step run instructions for Replit.
+
+========================================================
+PHASE 0 — PROJECT SETUP (Monorepo)
+========================================================
+Create a single repo with:
+- /frontend  (React app)
+- /functions (Firebase Cloud Functions Node.js + Express)
+- firebase.json, .firebaserc
+- Root README.md
+
+Scripts:
+- Root script to run frontend + functions locally (two terminals is OK, but document it)
+- /frontend: dev/build scripts
+- /functions: start emulator/local server script
+
+========================================================
+PHASE 1 — DATA MODEL + SECURITY (Firebase)
+========================================================
+Use Firestore collections (suggested):
+- users (role: "admin" or "user", name, email, phone, createdAt)
+- events
+- tickets (ticket types inside events OR subcollection)
+- registrations (eventId, userId, ticketTypeId, qty, status, paymentStatus, createdAt)
+- bookings (place rental requests: date, time, details, status)
+- payments (registrationId, provider, amount, currency, status, createdAt)
+
+Add Firebase Auth:
+- Email/password login for Admin
+- Users can browse without login, but must login to buy/register tickets
+
+Security rules:
+- Only Admin can create/edit/delete events, view registrations list, edit registration status
+- Users can only read public events and read their own registrations
+- Storage: Admin can upload banners/logos
+
+========================================================
+PHASE 2 — FRONTEND PUBLIC WEBSITE (User)
+========================================================
+Rebuild the current website UI into React while keeping the same branding and layout as much as possible.
+
+Pages:
+1) Landing Page (home)
+2) Services Page (include “rent our place” service)
+3) Events List Page (cards list with date, location, price/free badge)
+4) Event Details Page (shows full info + ticket types + register/buy)
+5) Login/Register Page (for users)
+
+User features:
+- View events
+- Open event details
+- Choose ticket type (free or paid)
+- Choose quantity (respect attendee capacity rules)
+- For free ticket: register directly (no payment)
+- For paid ticket: go to payment flow (Phase 4)
+
+UI requirements:
+- Mobile responsive
+- Clean navigation
+- Basic success/error messages
+
+========================================================
+PHASE 3 — ADMIN PANEL (Dashboard + Event Management)
+========================================================
+Create a protected Admin area: /admin
+Admin must login to access.
+
+Admin features:
+1) Dashboard
+- Total events
+- Total registrations
+- Paid vs free
+- Upcoming events
+
+2) Events CRUD
+Admin can Add / Edit / Remove events.
+
+Event Create/Edit MUST support:
+Page 1 (Event Details):
+- Event Title
+- Description
+- Start Date & Time
+- End Date & Time
+- Location
+- Venue Name
+- Banner image (upload to Firebase Storage)
+- Event logo (upload)
+- Categories tags
+- Organizer
+- Speaker(s)
+
+Page 2 (Tickets):
+- Ticket Type: free or paid
+- Ticket Name
+- Attendee Capacity (max)
+- Ticket Price (only if paid)
+- Minimum & Maximum per order
+- Ticket Description
+- Support multiple tickets per event (e.g. Basic, VIP)
+
+3) Registration List per event
+Inside each event page, show:
+- registrations list (name/email/qty/ticket type/payment status/status)
+- Admin can change registration status (example: pending, confirmed, cancelled, attended)
+
+4) Booking (Place rental)
+Admin can view booking requests and update status:
+- new / approved / rejected / completed
+
+5) Attendees
+- Attendees stats per event
+- Actions: mark as attended (check-in)
+- Search/filter by name, ticket type, status
+
+========================================================
+PHASE 4 — PAYMENT GATEWAY INTEGRATION (Backend + Frontend)
+========================================================
+Implement a generic payment gateway flow with these backend endpoints in Cloud Functions (Express):
+- GET  /api/health
+- POST /api/payments/create-session
+  Input: registrationId OR eventId + ticketTypeId + qty
+  Output: paymentUrl OR sessionId
+- POST /api/payments/webhook
+  Receives payment provider webhook events and updates:
+  - payments.status
+  - registrations.paymentStatus
+  - registrations.status
+
+Frontend payment flow:
+- After user chooses paid ticket, call create-session
+- Redirect user to paymentUrl
+- After payment success, show success page and update registration status to confirmed
+
+Notes:
+- Don’t lock to one provider in code. Build it so we can swap providers later.
+- Use environment variables for provider keys.
+
+========================================================
+PHASE 5 — QA, POLISH, AND DEPLOY NOTES
+========================================================
+- Validate inputs (frontend + backend)
+- Prevent overbooking: capacity must not be exceeded
+- Add loading states
+- Add admin audit logs (optional)
+- Write a complete README:
+  - Setup Firebase env
+  - Replit secrets to add
+  - Run instructions
+  - Test payment webhook locally (explain how)
+
+========================================================
+FINAL OUTPUT CHECKLIST
+========================================================
+- React website with public pages + events + ticket purchase/register
+- Admin dashboard with full events CRUD + registrations + booking + attendees actions
+- Firebase Auth, Firestore, Storage
+- Cloud Functions APIs for payments and business logic
+- Clean project structure and documentation
+
+Start now:
+1) Inspect current project files (HTML/CSS) and list pages/sections found.
+2) Build Phase 0 then Phase 1, then Phase 2, then Phase 3, then Phase 4, then Phase 5.
