@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border m-0 p-0;
+  }
+
+  body {
+    @apply bg-background text-primary-text;
+    direction: rtl;
+    font-family: 'Tajawal', sans-serif;
+    line-height: 1.8;
+    text-align: right;
+    overflow-x: hidden;
+    font-weight: 500;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Cairo', sans-serif;
+    @apply text-primary-text font-extrabold;
+  }
+
+  h1 {
+    @apply text-4xl;
+  }
+
+  h2 {
+    @apply text-3xl mb-6 text-center;
+  }
+
+  h3 {
+    @apply text-2xl;
+  }
+
+  a {
+    @apply no-underline text-accent-dark transition-all duration-300;
+  }
+
+  a:hover {
+    @apply text-primary-text;
+  }
+
+  section {
+    @apply py-20 px-5 mx-auto max-w-full;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-8 py-4 rounded-custom font-bold text-center inline-block transition-all duration-300 border-2 border-transparent;
+  }
+
+  .primary-btn {
+    @apply bg-accent-dark text-white border-accent-dark;
+  }
+
+  .primary-btn:hover {
+    @apply bg-black text-white border-black -translate-y-1;
+  }
+
+  .secondary-btn {
+    @apply bg-transparent text-accent-dark border-accent-dark;
+  }
+
+  .secondary-btn:hover {
+    @apply bg-accent-dark text-white -translate-y-1;
+  }
+
+  .section-inner-container {
+    @apply max-w-6xl mx-auto;
+  }
+
+  .card {
+    @apply bg-white rounded-custom overflow-hidden shadow-lg transition-all duration-300 flex flex-col;
+  }
+
+  .card:hover {
+    @apply -translate-y-2 shadow-xl;
+  }
+}
