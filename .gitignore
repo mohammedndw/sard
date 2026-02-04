@@ -24,7 +24,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # Local env files
-.env
+# .env - removed to allow committing env file
 .env*.local
 
 # Vercel
